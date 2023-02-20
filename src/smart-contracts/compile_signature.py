@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     sig = utils.signature(algod_client, pyteal)
 
-    print(f"Logic Signature Address: {sig.address}")
+    print(f"Logic Signature Address: {sig}")
 
     with open(outfile, "w") as h:
         h.write(sig.teal)

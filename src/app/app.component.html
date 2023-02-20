@@ -1,1 +1,142 @@
-<button (click)="callApplication()">Call app</button>
+<section>
+  <form>
+    <div>
+      <label for="funderAddress">Signer address:</label>
+      <input
+        type="text"
+        id="funderAddress"
+        name="funderAddress"
+        [(ngModel)]="funderAddress"
+        style="width: 530px"
+      />
+    </div>
+
+    <div>
+      <label for="funderMnemonic">Signer mnemonic:</label>
+      <input
+        type="text"
+        id="funderMnemonic"
+        name="funderMnemonic"
+        [(ngModel)]="funderMnemonic"
+        style="width: 800px"
+      />
+    </div>
+
+    <div>
+      <label for="assetId">Asset ID:</label>
+      <input
+        type="text"
+        id="assetId"
+        name="assetId"
+        [(ngModel)]="assetId"
+        style="width: 100px"
+      />
+    </div>
+
+    <div>
+      <label for="appId">POAP booth smart contract ID:</label>
+      <input
+        type="text"
+        id="appId"
+        name="appId"
+        [(ngModel)]="appId"
+        style="width: 100px"
+      />
+    </div>
+
+    <input
+      type="submit"
+      (click)="createSignature(funderAddress, funderMnemonic, assetId, appId)"
+      value="Create Signature"
+    />
+    <div>{{ b64Lsig }}</div>
+  </form>
+
+  <form>
+    <div>
+      <label for="assetId">POAP ID:</label>
+      <input
+        id="assetId"
+        name="assetId"
+        [(ngModel)]="assetId"
+        style="width: 100px"
+      />
+
+      <label for="assetAmount">POAPs total amount available:</label>
+      <input id="assetAmount" name="assetAmount" [(ngModel)]="assetAmount" />
+    </div>
+
+    <div>
+      <label for="appAddress">POAP booth smart contract address:</label>
+      <input
+        id="appAddress"
+        name="appAddress "
+        [(ngModel)]="appAddress"
+        style="width: 530px"
+      />
+
+      <label for="appId">POAP booth smart contract ID:</label>
+      <input id="appId" name="appId" [(ngModel)]="appId" style="width: 100px" />
+    </div>
+
+    <input
+      (click)="InitializePoapBooth(appAddress, appId, assetId, assetAmount)"
+      type="submit"
+      value="Initialize POAP booth"
+    />
+  </form>
+
+  <form>
+    <div>
+      <label for="assetId">POAP ID:</label>
+      <input
+        type="text"
+        id="poapId"
+        name="assetId"
+        [(ngModel)]="assetId"
+        style="width: 100px"
+      />
+    </div>
+
+    <div>
+      <label for="appId">POAP booth smart contract ID:</label>
+      <input
+        type="text"
+        id="appId"
+        name="appId"
+        [(ngModel)]="appId"
+        style="width: 100px"
+      />
+    </div>
+
+    <div>
+      <label for="userAddress">User address:</label>
+      <input
+        type="text"
+        id="userAddress"
+        name="userAddress"
+        [(ngModel)]="userAddress"
+        style="width: 530px"
+      />
+    </div>
+
+    <div>
+      <label for="userMnemonic">User mnemonic:</label>
+      <input
+        type="text"
+        id="userMnemonic"
+        name="userMnemonic"
+        [(ngModel)]="userMnemonic"
+        style="width: 800px"
+      />
+    </div>
+
+    <input
+      (click)="claimPoap(appId, assetId, userAddress, userMnemonic)"
+      type="submit"
+      value="Claim POAP"
+    />
+  </form>
+
+  <button (click)="retrieveAll()">Retrieve all</button>
+</section>

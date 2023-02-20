@@ -1,54 +1,226 @@
-#pragma version 5
+#pragma version 6
 txn ApplicationID
 int 0
 ==
-bnz main_l12
+bnz main_l16
 txn OnCompletion
 int DeleteApplication
 ==
-bnz main_l11
+bnz main_l15
 txn OnCompletion
 int UpdateApplication
 ==
-bnz main_l10
+bnz main_l14
 txn OnCompletion
 int OptIn
 ==
-bnz main_l9
+bnz main_l13
 txn OnCompletion
 int CloseOut
 ==
-bnz main_l8
+bnz main_l12
 txn OnCompletion
 int NoOp
 ==
 bnz main_l7
 err
 main_l7:
+txna ApplicationArgs 0
+byte "set_up"
+==
+bnz main_l11
+txna ApplicationArgs 0
+byte "retrieve_all"
+==
+bnz main_l10
+err
+main_l10:
+byte "has_booth_started"
+app_global_get
+assert
+txn Sender
+global CreatorAddress
+==
+assert
+itxn_begin
+int axfer
+itxn_field TypeEnum
+byte "asset_id"
+app_global_get
+itxn_field XferAsset
+global CreatorAddress
+itxn_field AssetCloseTo
+int 0
+itxn_field Fee
+itxn_submit
 itxn_begin
 int pay
 itxn_field TypeEnum
+global CreatorAddress
+itxn_field CloseRemainderTo
+int 0
+itxn_field Fee
+itxn_submit
+byte "has_booth_started"
+int 0
+app_global_put
+int 1
+return
+main_l11:
+byte "has_booth_started"
+app_global_get
+!
+global GroupSize
+int 3
+==
+txn GroupIndex
+int 1
+==
+&&
 txn Sender
-itxn_field Receiver
-int 100000
-itxn_field Amount
-int 1000
+global CreatorAddress
+==
+&&
+gtxn 0 TypeEnum
+int pay
+==
+&&
+gtxn 0 Amount
+int 200000
+==
+&&
+gtxn 0 Receiver
+global CurrentApplicationAddress
+==
+&&
+gtxn 0 Sender
+global CreatorAddress
+==
+&&
+gtxn 2 TypeEnum
+int axfer
+==
+&&
+gtxn 2 AssetAmount
+int 0
+>
+&&
+gtxn 2 AssetReceiver
+global CurrentApplicationAddress
+==
+&&
+gtxn 2 Sender
+global CreatorAddress
+==
+&&
+&&
+assert
+itxn_begin
+int axfer
+itxn_field TypeEnum
+int 0
+itxn_field AssetAmount
+gtxn 2 XferAsset
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field AssetReceiver
+int 0
+itxn_field Fee
+itxn_submit
+byte "has_booth_started"
+int 1
+app_global_put
+byte "asset_id"
+gtxn 2 XferAsset
+app_global_put
+int 1
+return
+main_l12:
+int 0
+return
+main_l13:
+byte "has_booth_started"
+app_global_get
+global GroupSize
+int 3
+==
+&&
+txn GroupIndex
+int 2
+==
+&&
+gtxn 0 TypeEnum
+int pay
+==
+gtxn 0 Receiver
+txn Sender
+==
+&&
+gtxn 0 Sender
+global CreatorAddress
+==
+&&
+gtxn 0 Amount
+int 300000
+==
+&&
+gtxn 0 Fee
+int 4
+global MinTxnFee
+*
+==
+&&
+&&
+gtxn 1 TypeEnum
+int axfer
+==
+gtxn 1 XferAsset
+byte "asset_id"
+app_global_get
+==
+&&
+gtxn 1 AssetAmount
+int 0
+==
+&&
+gtxn 1 AssetReceiver
+txn Sender
+==
+&&
+gtxn 1 Sender
+txn Sender
+==
+&&
+&&
+assert
+itxn_begin
+int axfer
+itxn_field TypeEnum
+byte "asset_id"
+app_global_get
+itxn_field XferAsset
+txn Sender
+itxn_field AssetReceiver
+int 1
+itxn_field AssetAmount
+int 0
 itxn_field Fee
 itxn_submit
 int 1
 return
-main_l8:
+main_l14:
 int 0
 return
-main_l9:
-int 0
+main_l15:
+txn Sender
+global CreatorAddress
+==
+assert
+int 1
 return
-main_l10:
+main_l16:
+byte "has_booth_started"
 int 0
-return
-main_l11:
-int 0
-return
-main_l12:
+app_global_put
 int 1
 return

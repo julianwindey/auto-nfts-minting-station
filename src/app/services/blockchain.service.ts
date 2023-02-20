@@ -52,8 +52,16 @@ export class BlockchainService {
     return signedTxn;
   }
 
-  async broadCastTransactions(signedTxns: Uint8Array[]) {
-    this.algodClient.sendRawTransaction(signedTxns).do();
+  signTransactionWithLsig(txn: Transaction, b64Lsig: string) {
+    const lsigObj = this.b64LsigToObject(b64Lsig);
+    const lSignedTxn = algosdk.signLogicSigTransactionObject(txn, lsigObj).blob;
+    return lSignedTxn;
+  }
+
+  private b64LsigToObject(b64Lsig: string) {
+    return algosdk.logicSigFromByte(
+      new Uint8Array(Buffer.from(b64Lsig, 'base64'))
+    );
   }
 
   async waitForTxnsConfirmation(txns: Transaction[]) {
@@ -66,5 +74,26 @@ export class BlockchainService {
       const txnFee = confirmedOperation['txn'].txn.fee;
       console.log(txnFee);
     });
+  }
+
+  async broadCastTransactions(signedTxns: Uint8Array[]) {
+    this.algodClient.sendRawTransaction(signedTxns).do();
+  }
+
+  makeLsigWithMnemonic(
+    b64Bytecode: string,
+    mnemonic: string,
+    args: Uint8Array[]
+  ): string {
+    const programBytes = new Uint8Array(Buffer.from(b64Bytecode, 'base64'));
+    const lsig = new algosdk.LogicSigAccount(programBytes, args).lsig;
+    lsig.sign(algosdk.mnemonicToSecretKey(mnemonic).sk);
+    const b64Lsig = Buffer.from(lsig.toByte()).toString('base64');
+    return b64Lsig;
+  }
+
+  async compileProgram(programSource: string) {
+    const compiledBase64 = await this.algodClient.compile(programSource).do();
+    return compiledBase64;
   }
 }
